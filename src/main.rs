@@ -10,7 +10,7 @@ use util::vec3d::{Point3D, Vec3D};
 use util::ray::{Ray};
 
 
-fn ray_color(ray: &Ray) -> Color{
+fn ray_color(ray: Ray) -> Color{
     let center = Vec3D::new(0.0, 0.0, -1.0);
     let t = is_hitting_sphere(center, 0.5, ray);
 
@@ -26,7 +26,7 @@ fn ray_color(ray: &Ray) -> Color{
 }
 
 
-fn is_hitting_sphere(center: Point3D, radius: f64, ray: &Ray) -> f64{
+fn is_hitting_sphere(center: Point3D, radius: f64, ray: Ray) -> f64{
     let o_c = center - ray.origin;
     let a = ray.direction.length_squared();
     let h = dot(ray.direction, o_c);
@@ -75,7 +75,7 @@ fn main() -> std::io::Result<()>{
             let ray_direction = pixel_center - camera_center;
 
             let ray = Ray::new(camera_center, ray_direction);
-            let pixel_color = ray_color(&ray);
+            let pixel_color = ray_color(ray);
 
             write_color(&mut file, &pixel_color)?;
         }
