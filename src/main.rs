@@ -3,7 +3,7 @@ use std::io::Write;
 
 mod util; 
 
-// use util::vec3d::Vec3D;
+use util::vec3d::{dot, cross};
 use util::color::{Color, write_color};
 
 use crate::util::vec3d::{Point3D, Vec3D};
@@ -11,9 +11,24 @@ use util::ray::{Ray};
 
 
 fn ray_color(ray: &Ray) -> Color{
+    if is_hitting_sphere(Vec3D::new(0.0, 0.0, -1.0), 0.5, ray){
+        return Color::new(1.0, 0.0, 0.0);
+    }
+
     let unit_dir = ray.direction.to_unit();
     let a = 0.5*(unit_dir.y + 1.0);
     (1.0 - a)*Color::new(1.0, 1.0, 1.0) + a*Color::new(0.5, 0.7, 1.0)
+}
+
+
+fn is_hitting_sphere(center: Point3D, radius: f64, ray: &Ray) -> bool{
+    let o_c = center - ray.origin;
+    let a = dot(ray.direction, ray.direction);
+    let b = 2.0 * dot(ray.direction, o_c);
+    let c = dot(o_c, o_c) - radius*radius; 
+
+    let delta = b*b - 4.0*a*c;
+    delta >= 0.0
 }
 
 

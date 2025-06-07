@@ -26,6 +26,8 @@ impl Vec3D {
     pub fn to_unit(&self) -> Vec3D {
         *self / self.length()
     }
+
+    
 }
 
 impl fmt::Display for Vec3D {
