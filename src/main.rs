@@ -3,16 +3,21 @@ use std::io::Write;
 
 mod util; 
 
-use util::vec3d::{dot, cross};
+use util::vec3d::{dot};
 use util::color::{Color, write_color};
 
-use crate::util::vec3d::{Point3D, Vec3D};
+use util::vec3d::{Point3D, Vec3D};
 use util::ray::{Ray};
 
 
 fn ray_color(ray: &Ray) -> Color{
-    if is_hitting_sphere(Vec3D::new(0.0, 0.0, -1.0), 0.5, ray){
-        return Color::new(1.0, 0.0, 0.0);
+    let center = Vec3D::new(0.0, 0.0, -1.0);
+    let t = is_hitting_sphere(center, 0.5, ray);
+
+    if t > 0.0 {
+        let mut n = ray.at(t) - center;
+        n = n.to_unit();
+        return 0.5 * Color::new(n.x + 1.0, n.y + 1.0, n.z + 1.0);
     }
 
     let unit_dir = ray.direction.to_unit();
@@ -21,14 +26,19 @@ fn ray_color(ray: &Ray) -> Color{
 }
 
 
-fn is_hitting_sphere(center: Point3D, radius: f64, ray: &Ray) -> bool{
+fn is_hitting_sphere(center: Point3D, radius: f64, ray: &Ray) -> f64{
     let o_c = center - ray.origin;
-    let a = dot(ray.direction, ray.direction);
-    let b = 2.0 * dot(ray.direction, o_c);
-    let c = dot(o_c, o_c) - radius*radius; 
+    let a = ray.direction.length_squared();
+    let h = dot(ray.direction, o_c);
+    let c = o_c.length_squared() - radius*radius; 
 
-    let delta = b*b - 4.0*a*c;
-    delta >= 0.0
+    let delta = h*h - a * c;
+    
+    if delta < 0.0 {
+        return -1.0;
+    }
+
+    (h - delta.sqrt()) / a
 }
 
 
