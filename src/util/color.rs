@@ -1,5 +1,5 @@
 
-use crate::vec3d::Vec3D;
+use crate::util::vec3d::Vec3D;
 
 pub type Color = Vec3D;
 

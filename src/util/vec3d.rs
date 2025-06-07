@@ -1,7 +1,7 @@
 
 use std::{ops::{Add, Div, Mul, Sub, Neg}, fmt};
 
-
+pub type Point3D = Vec3D;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Vec3D {
