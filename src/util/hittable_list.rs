@@ -7,8 +7,8 @@ pub struct HittableList {
 }
 
 impl HittableList {
-    pub fn push(&mut self, hitable: Box<dyn Hittable + 'static>) {
-        self.objects.push(hitable);
+    pub fn push(&mut self, hittable: Box<dyn Hittable + 'static>) {
+        self.objects.push(hittable);
     }
 }
 
