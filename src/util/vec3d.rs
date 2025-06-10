@@ -1,6 +1,9 @@
 
 use std::{fmt, ops::{Add, AddAssign, Div, Mul, Neg, Sub}};
 
+use rand::{Rng};
+use rand_distr::{Distribution, StandardNormal};
+
 pub type Point3D = Vec3D;
 
 #[derive(Debug, Clone, Copy, Default)]
@@ -26,6 +29,43 @@ impl Vec3D {
     pub fn to_unit(&self) -> Vec3D {
         *self / self.length()
     }    
+
+    pub fn random(min: f64, max: f64) -> Vec3D {
+        let mut rng = rand::rng();
+
+        let x = rng.random_range(min..max);
+        let y = rng.random_range(min..max);
+        let z = rng.random_range(min..max);
+
+        Vec3D{x, y, z}
+    }
+
+    fn random_unit_vector() -> Vec3D {
+        let mut rng = rand::rng();
+    
+        loop {
+            let x: f64 = StandardNormal.sample(&mut rng);
+            let y: f64 = StandardNormal.sample(&mut rng);
+            let z: f64 = StandardNormal.sample(&mut rng);
+        
+            let v = Vec3D::new(x, y, z);
+            let len_sq = v.length_squared();
+    
+            if len_sq > 1e-160 {
+                return v / len_sq.sqrt();
+            }
+        }
+    }
+
+    pub fn random_on_hemisphere(normal: Vec3D) -> Vec3D {
+        let v = Self::random_unit_vector();
+
+        if dot(v, normal) > 0.0 {
+            v
+        } else {
+            -v
+        }
+    }
 }
 
 impl fmt::Display for Vec3D {

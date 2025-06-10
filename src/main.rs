@@ -28,7 +28,8 @@ fn main() -> std::io::Result<()>{
 
     camera.aspect_ratio = 16.0 / 9.0;
     camera.image_width = 400;
-    camera.samples_per_pixel = 5;
+    camera.samples_per_pixel = 10;
+    camera.max_depth = 50;
 
     let mut file = File::create("output/file.ppm")?;
 

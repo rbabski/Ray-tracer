@@ -2,7 +2,7 @@ use std::f64::INFINITY;
 
 use crate::util::{color::{write_color, Color}, hittable_list::HittableList, objects::hittable::{HitRecord, Hittable}, ray::Ray, vec3d::{Point3D, Vec3D}};
 
-use rand::{Rng};
+use rand::{rngs::ThreadRng, Rng};
 
 
 
@@ -11,6 +11,7 @@ pub struct Camera {
     pub aspect_ratio: f64,
     pub image_width: i32,
     pub samples_per_pixel: i32,
+    pub max_depth: i32,
     image_height: i32,
     camera_center: Point3D,
     pixel00_loc: Point3D,
@@ -22,6 +23,7 @@ pub struct Camera {
 impl Camera {
     pub fn render<T: std::io::Write>(&mut self, file: &mut T, world: &HittableList) -> std::io::Result<()> {
         self.initialize();
+        let mut rng = rand::rng();
 
         write!(file, "P3\n{} {}\n255\n", self.image_width, self.image_height)?;
 
@@ -41,11 +43,12 @@ impl Camera {
                 let mut pixel_color = Color::new(0.0, 0.0, 0.0);
                 
                 for _ in 0..self.samples_per_pixel {
-                    let ray = self.get_ray(i, j);
-                    pixel_color += Self::ray_color(ray, &world);
+                    let ray = self.get_ray(i, j, &mut rng);
+                    pixel_color += Self::ray_color(ray, self.max_depth, &world);
                 }
-                let color = self.pixel_samples_scale*pixel_color;
-                write_color(file, &color)?;
+                pixel_color = self.pixel_samples_scale*pixel_color;
+                
+                write_color(file, &pixel_color)?;
         }
     }
     Ok(())
@@ -54,8 +57,6 @@ impl Camera {
 
 
     fn initialize(&mut self) {
-        self.aspect_ratio = 16.0 / 9.0;
-        self.image_width = 400;
         self.pixel_samples_scale = 1.0 / self.samples_per_pixel as f64;
     
         let image_height = (self.image_width as f64 / self.aspect_ratio) as i32;
@@ -86,11 +87,17 @@ impl Camera {
 
 
 
-    fn ray_color(ray: Ray, world: &HittableList) -> Color {
+    fn ray_color(ray: Ray, depth: i32, world: &HittableList) -> Color {
+        if depth <= 0 {
+            return Color::new(0.0,0.0,0.0);
+        }
+
         let mut rec = HitRecord::default();
     
-        if world.hit(ray, 0.0, INFINITY, &mut rec) {
-            return 0.5 * (rec.normal + Color::new(1.0,1.0,1.0));
+        if world.hit(ray, 0.001, INFINITY, &mut rec) {
+            let direction = Vec3D::random_on_hemisphere(rec.normal) + rec.normal;
+
+            return 0.5 * Self::ray_color(Ray::new(rec.point, direction), depth-1, world);
         }
 
         let unit_dir = ray.direction.to_unit();
@@ -99,8 +106,8 @@ impl Camera {
     }
 
 
-    fn get_ray(&self, i: i32, j: i32) -> Ray {
-        let offset = Self::sample_square();
+    fn get_ray(&self, i: i32, j: i32, rng: &mut ThreadRng) -> Ray {
+        let offset = Self::sample_square(rng);
         let pixel_sample = self.pixel00_loc + ((i as f64 + offset.x) * self.pixel_delta_u) + ((j as f64 + offset.y) * self.pixel_delta_v);
 
         let ray_origin = self.camera_center;
@@ -110,9 +117,7 @@ impl Camera {
     }
 
 
-    fn sample_square() -> Vec3D {
-        let mut rng = rand::rng();
-
+    fn sample_square(rng: &mut ThreadRng) -> Vec3D {
         let x = rng.random_range(-0.5..0.5);
         let y = rng.random_range(-0.5..0.5);
 
