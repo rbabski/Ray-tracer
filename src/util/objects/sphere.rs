@@ -2,9 +2,19 @@ use crate::util::{objects::hittable::{HitRecord, Hittable}, ray::Ray, vec3d::{do
 
 
 pub struct Sphere {
-    center: Point3D,
-    radius: f64
+    pub center: Point3D,
+    pub radius: f64
 }
+
+impl Sphere {
+    pub fn new(center: Point3D, radius: f64) -> Sphere {
+        Sphere {
+            center,
+            radius
+        }
+    }
+}
+
 
 impl Hittable for Sphere {
     fn hit(&self, ray: Ray, t_min: f64, t_max: f64, hit_rec: &mut HitRecord) -> bool{
@@ -32,7 +42,9 @@ impl Hittable for Sphere {
 
         hit_rec.t = root;
         hit_rec.point = ray.at(hit_rec.t);
-        hit_rec.normal = (hit_rec.point - self.center) / self.radius;
+
+        let out_normal = (hit_rec.point - self.center) / self.radius;
+        hit_rec.set_face_normal(ray, out_normal);
 
         return true;
     }
