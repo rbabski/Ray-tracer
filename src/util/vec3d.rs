@@ -1,5 +1,5 @@
 
-use std::{ops::{Add, Div, Mul, Sub, Neg}, fmt};
+use std::{fmt, ops::{Add, AddAssign, Div, Mul, Neg, Sub}};
 
 pub type Point3D = Vec3D;
 
@@ -45,6 +45,15 @@ impl Add for Vec3D {
         }
     }
 }
+
+impl AddAssign for Vec3D {
+    fn add_assign(&mut self, other: Self) {
+        self.x += other.x;
+        self.y += other.y;
+        self.z += other.z;
+    }
+}
+
 
 impl Sub for Vec3D {
     type Output = Self;

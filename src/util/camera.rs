@@ -2,16 +2,21 @@ use std::f64::INFINITY;
 
 use crate::util::{color::{write_color, Color}, hittable_list::HittableList, objects::hittable::{HitRecord, Hittable}, ray::Ray, vec3d::{Point3D, Vec3D}};
 
+use rand::{Rng};
+
+
 
 #[derive(Default)]
 pub struct Camera {
     pub aspect_ratio: f64,
     pub image_width: i32,
+    pub samples_per_pixel: i32,
     image_height: i32,
     camera_center: Point3D,
     pixel00_loc: Point3D,
     pixel_delta_u: Vec3D,
-    pixel_delta_v: Vec3D
+    pixel_delta_v: Vec3D,
+    pixel_samples_scale: f64
 }
 
 impl Camera {
@@ -24,14 +29,23 @@ impl Camera {
             let line = self.image_height - j;
             println!("\rScanlines remaining: {line}");
             for i in 0..self.image_width {
-                let pixel_center = self.pixel00_loc + (i as f64 * self.pixel_delta_u) + (j as f64 * self.pixel_delta_v);
+                /*let pixel_center = self.pixel00_loc + (i as f64 * self.pixel_delta_u) + (j as f64 * self.pixel_delta_v);
                 let ray_direction = pixel_center - self.camera_center;
 
                 let ray = Ray::new(self.camera_center, ray_direction);
                 
                 let pixel_color = Camera::ray_color(ray, &world);
 
-                write_color(file, &pixel_color)?;
+                write_color(file, &pixel_color)?;*/
+
+                let mut pixel_color = Color::new(0.0, 0.0, 0.0);
+                
+                for _ in 0..self.samples_per_pixel {
+                    let ray = self.get_ray(i, j);
+                    pixel_color += Self::ray_color(ray, &world);
+                }
+                let color = self.pixel_samples_scale*pixel_color;
+                write_color(file, &color)?;
         }
     }
     Ok(())
@@ -40,17 +54,18 @@ impl Camera {
 
 
     fn initialize(&mut self) {
-        let aspect_ratio = 16.0 / 9.0;
-        let image_width = 400;
+        self.aspect_ratio = 16.0 / 9.0;
+        self.image_width = 400;
+        self.pixel_samples_scale = 1.0 / self.samples_per_pixel as f64;
     
-        let image_height = (image_width as f64 / aspect_ratio) as i32;
+        let image_height = (self.image_width as f64 / self.aspect_ratio) as i32;
         self.image_height = if image_height < 1 { 1 } else { image_height };
 
         // camera
 
         let focal_length = 1.0;
         let viewport_height = 2.0;
-        let viewport_width = viewport_height * (image_width as f64 / image_height as f64);
+        let viewport_width = viewport_height * (self.image_width as f64 / image_height as f64);
         let camera_center = Point3D::new(0.0, 0.0, 0.0);
 
         // delta vectors pixel to pixel
@@ -58,7 +73,7 @@ impl Camera {
         let viewport_u = Vec3D::new(viewport_width, 0.0, 0.0);
         let viewport_v = Vec3D::new(0.0, -viewport_height, 0.0);
 
-        self.pixel_delta_u = viewport_u / image_width as f64;
+        self.pixel_delta_u = viewport_u / self.image_width as f64;
         self.pixel_delta_v = viewport_v / image_height as f64;
 
 
@@ -82,4 +97,26 @@ impl Camera {
         let a = 0.5*(unit_dir.y + 1.0);
         (1.0 - a)*Color::new(1.0, 1.0, 1.0) + a*Color::new(0.5, 0.7, 1.0)
     }
+
+
+    fn get_ray(&self, i: i32, j: i32) -> Ray {
+        let offset = Self::sample_square();
+        let pixel_sample = self.pixel00_loc + ((i as f64 + offset.x) * self.pixel_delta_u) + ((j as f64 + offset.y) * self.pixel_delta_v);
+
+        let ray_origin = self.camera_center;
+        let ray_direction = pixel_sample - ray_origin;
+
+        Ray::new(ray_origin, ray_direction)
+    }
+
+
+    fn sample_square() -> Vec3D {
+        let mut rng = rand::rng();
+
+        let x = rng.random_range(-0.5..0.5);
+        let y = rng.random_range(-0.5..0.5);
+
+        Vec3D::new(x, y, 0.0)
+    }
+
 }

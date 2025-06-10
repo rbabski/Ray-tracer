@@ -9,7 +9,9 @@ use crate::util::hittable_list::HittableList;
 use crate::util::objects::sphere::Sphere;
 use crate::util::vec3d::Point3D;
 
+
 fn main() -> std::io::Result<()>{
+
     // world
 
     let mut world = HittableList::default();
@@ -26,6 +28,7 @@ fn main() -> std::io::Result<()>{
 
     camera.aspect_ratio = 16.0 / 9.0;
     camera.image_width = 400;
+    camera.samples_per_pixel = 5;
 
     let mut file = File::create("output/file.ppm")?;
 
