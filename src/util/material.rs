@@ -1,5 +1,5 @@
 
-use crate::util::{color::Color, objects::hittable::HitRecord, ray::Ray, vec3d::Vec3D};
+use crate::util::{color::Color, objects::hittable::HitRecord, ray::Ray, vec3d::{dot, Vec3D}};
 
 
 #[derive(Clone)]
@@ -24,7 +24,7 @@ pub struct Lambertian {
 }
 
 impl Lambertian {
-    pub fn scatter(&self, ray_in: Ray, rec: HitRecord, attenuation: &mut Color, scattered: &mut Ray) -> bool {
+    pub fn scatter(&self, _ray_in: Ray, rec: HitRecord, attenuation: &mut Color, scattered: &mut Ray) -> bool {
         let scatter_direction = rec.normal + Vec3D::random_unit_vector();
 
         if scatter_direction.near_zero() {
@@ -43,17 +43,19 @@ impl Lambertian {
 
 #[derive(Clone, Default)]
 pub struct Metal {
-    pub albedo: Color
+    pub albedo: Color,
+    pub fuzz: f64
 }
 
 impl Metal {
     pub fn scatter(&self, ray_in: Ray, rec: HitRecord,  attenuation: &mut Color, scattered: &mut Ray) -> bool {
-        let reflected = ray_in.direction.reflect(rec.normal);
+        let mut reflected = ray_in.direction.reflect(rec.normal);
+        reflected = reflected.to_unit() + self.fuzz * Vec3D::random_unit_vector();
         
         *scattered = Ray::new(rec.point, reflected);
         *attenuation = self.albedo;
 
-        true
+        dot(scattered.direction, rec.normal) > 0.0
     }
 }
 
@@ -63,7 +65,31 @@ impl Metal {
 
 #[derive(Clone, Default)]
 pub struct Dielectric {
+    pub refraction_index: f64
+}
 
+impl Dielectric {
+    pub fn scatter(&self, ray_in: Ray, rec: HitRecord,  attenuation: &mut Color, scattered: &mut Ray) -> bool {
+        *attenuation = Color::new(1.0, 1.0, 1.0);
+
+        let ri = if rec.front_face {1.0 / self.refraction_index} else {self.refraction_index};
+
+        let unit_direction = ray_in.direction.to_unit();
+
+        let cos_theta = f64::min(dot(-unit_direction, rec.normal), 1.0);
+        let sin_theta = (1.0 - cos_theta*cos_theta).sqrt();
+
+        let direction: Vec3D;
+        if ri * sin_theta > 1.0 {
+            direction = unit_direction.reflect(rec.normal);
+        } else {
+            direction = unit_direction.refract(rec.normal, ri);
+        }
+
+        *scattered = Ray::new(rec.point, direction);
+
+        true
+    }
 }
 
 
@@ -72,7 +98,7 @@ impl Material {
         match self {
             Material::Lambertian(mat) => mat.scatter(ray_in, rec, attentuation, scattered),
             Material::Metal(mat) => mat.scatter(ray_in, rec, attentuation, scattered),
-            Material::Dielectric(mat) => false
+            Material::Dielectric(mat) => mat.scatter(ray_in, rec, attentuation, scattered)
         }
     }
     

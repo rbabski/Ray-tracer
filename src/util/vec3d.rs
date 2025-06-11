@@ -75,6 +75,16 @@ impl Vec3D {
     pub fn reflect(&self, normal: Vec3D) -> Vec3D {
         *self - 2.0*dot(*self, normal)*normal
     }
+
+    pub fn refract(&self, normal: Vec3D, eta: f64) -> Vec3D {
+        let r = *self;
+        let cos_theta = f64::min(dot(-r, normal), 1.0);
+
+        let r_perpendicular = eta * (r + cos_theta*normal);
+        let r_parallel = -(1.0 - r_perpendicular.length_squared()).sqrt() * normal;
+
+        r_perpendicular + r_parallel
+    }
 }
 
 impl fmt::Display for Vec3D {

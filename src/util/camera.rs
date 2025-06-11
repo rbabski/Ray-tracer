@@ -1,6 +1,6 @@
-use std::f64::INFINITY;
 
-use crate::util::{color::{write_color, Color}, hittable_list::HittableList, material::Material, objects::hittable::{HitRecord, Hittable}, ray::Ray, vec3d::{Point3D, Vec3D}};
+
+use crate::util::{color::{write_color, Color}, hittable_list::HittableList, objects::hittable::{HitRecord, Hittable}, ray::Ray, vec3d::{Point3D, Vec3D}};
 use rand::{rngs::ThreadRng, Rng};
 
 

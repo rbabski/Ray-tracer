@@ -1,8 +1,6 @@
 
 
-use std::rc::Rc;
-
-use crate::util::material::{Lambertian, Material};
+use crate::util::material::{Material};
 use crate::util::vec3d::{dot, Point3D, Vec3D};
 use crate::util::ray::Ray;
 
