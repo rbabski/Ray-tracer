@@ -2,7 +2,7 @@
 
 ## Opis (PL)
 
-To repozytorium zawiera projekt semestralny zrealizowany w ramach kursu **Programowanie w języku Rust** na kierunku **Informatyka** na **Akademii Górniczo-Hutniczej w Krakowie**.
+Repozytorium zawiera projekt semestralny zrealizowany w ramach kursu **Programowanie w języku Rust** na kierunku **Informatyka** na **Akademii Górniczo-Hutniczej w Krakowie**.
 
 Projekt przedstawia prosty silnik ray tracingu napisany w języku Rust. Implementacja została oparta na książce _"Ray Tracing in One Weekend"_ autorstwa Petera Shirley'a. Główne elementy projektu to:
 - Obsługa podstawowych materiałów (Lambertian, Metal, Dielectric)
