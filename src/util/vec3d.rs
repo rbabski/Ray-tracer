@@ -40,7 +40,7 @@ impl Vec3D {
         Vec3D{x, y, z}
     }
 
-    fn random_unit_vector() -> Vec3D {
+    pub fn random_unit_vector() -> Vec3D {
         let mut rng = rand::rng();
     
         loop {
@@ -65,6 +65,15 @@ impl Vec3D {
         } else {
             -v
         }
+    }
+
+    pub fn near_zero(&self) -> bool {
+        let s = 1e-8;
+        self.x < s && self.y < s && self.z < s
+    }
+    
+    pub fn reflect(&self, normal: Vec3D) -> Vec3D {
+        *self - 2.0*dot(*self, normal)*normal
     }
 }
 

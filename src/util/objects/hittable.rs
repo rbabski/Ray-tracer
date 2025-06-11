@@ -1,19 +1,24 @@
 
+
+use std::rc::Rc;
+
+use crate::util::material::{Lambertian, Material};
 use crate::util::vec3d::{dot, Point3D, Vec3D};
 use crate::util::ray::Ray;
 
 
 pub trait Hittable {
-    fn hit(&self, ray: Ray, t_min: f64, t_max: f64, hit: &mut HitRecord) -> bool;
+    fn  hit(&self, ray: Ray, t_min: f64, t_max: f64, hit: &mut HitRecord) -> bool;
 }
 
 
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Clone, Default)]
 pub struct HitRecord {
     pub point: Point3D,
     pub normal: Vec3D,
     pub t: f64,
-    pub front_face: bool
+    pub front_face: bool,
+    pub material: Material
 }
 
 impl HitRecord {

@@ -1,4 +1,5 @@
 
+use std::ops::Mul;
 use crate::util::vec3d::Vec3D;
 
 pub type Color = Vec3D;
@@ -30,4 +31,19 @@ pub fn write_color<T: std::io::Write>(dest: &mut T, color: &Color) -> std::io::R
     let bbyte = (256.0 * clamp(b)) as u8;
 
     writeln!(dest, "{} {} {}", rbyte, gbyte, bbyte)
+}
+
+
+
+
+impl Mul for Color {
+    type Output = Color;
+
+    fn mul(self, rhs: Color) -> Color {
+        Color {
+            x: self.x * rhs.x,
+            y: self.y * rhs.y,
+            z: self.z * rhs.z,
+        }
+    }
 }

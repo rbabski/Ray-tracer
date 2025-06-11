@@ -1,7 +1,6 @@
 use std::f64::INFINITY;
 
-use crate::util::{color::{write_color, Color}, hittable_list::HittableList, objects::hittable::{HitRecord, Hittable}, ray::Ray, vec3d::{Point3D, Vec3D}};
-
+use crate::util::{color::{write_color, Color}, hittable_list::HittableList, material::Material, objects::hittable::{HitRecord, Hittable}, ray::Ray, vec3d::{Point3D, Vec3D}};
 use rand::{rngs::ThreadRng, Rng};
 
 
@@ -92,12 +91,18 @@ impl Camera {
             return Color::new(0.0,0.0,0.0);
         }
 
-        let mut rec = HitRecord::default();
+        let mut rec: HitRecord = HitRecord::default();
     
-        if world.hit(ray, 0.001, INFINITY, &mut rec) {
-            let direction = Vec3D::random_on_hemisphere(rec.normal) + rec.normal;
-
-            return 0.5 * Self::ray_color(Ray::new(rec.point, direction), depth-1, world);
+        if world.hit(ray, 0.001, f64::INFINITY, &mut rec) {
+            let mut attenuation = Color::new(0.0, 0.0, 0.0);
+            let mut scattered = Ray::default(); 
+    
+            let material = &rec.material.clone();
+            if material.scatter(ray, rec, &mut attenuation, &mut scattered) {
+                return attenuation * Self::ray_color(scattered, depth - 1, world);
+            }
+    
+            return Color::new(0.0, 0.0, 0.0);
         }
 
         let unit_dir = ray.direction.to_unit();

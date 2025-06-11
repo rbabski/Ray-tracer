@@ -1,7 +1,7 @@
 use crate::util::vec3d::{Point3D, Vec3D};
 
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct Ray{
     pub origin: Point3D,
     pub direction: Vec3D
