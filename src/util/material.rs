@@ -1,4 +1,7 @@
 
+
+use rand::{Rng};
+
 use crate::util::{color::Color, objects::hittable::HitRecord, ray::Ray, vec3d::{dot, Vec3D}};
 
 
@@ -36,6 +39,8 @@ impl Lambertian {
 
         true
     }
+
+    
 }
 
 
@@ -80,7 +85,10 @@ impl Dielectric {
         let sin_theta = (1.0 - cos_theta*cos_theta).sqrt();
 
         let direction: Vec3D;
-        if ri * sin_theta > 1.0 {
+
+        let mut rng = rand::rng();
+        let random = rng.random_range(0.0..1.0);
+        if ri * sin_theta > 1.0 || Self::reflectance(cos_theta, ri) > random {
             direction = unit_direction.reflect(rec.normal);
         } else {
             direction = unit_direction.refract(rec.normal, ri);
@@ -90,15 +98,22 @@ impl Dielectric {
 
         true
     }
+
+    fn reflectance(cos: f64, ref_idx: f64) -> f64 {
+        let mut r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
+        r0 = r0*r0;
+        
+        r0 + (1.0 - r0)*(1.0-cos).powi(5)
+    }
 }
 
 
 impl Material {
-    pub fn scatter(&self, ray_in: Ray, rec: HitRecord, attentuation: &mut Color, scattered: &mut Ray) -> bool {
+    pub fn scatter(&self, ray_in: Ray, rec: HitRecord, attenuation: &mut Color, scattered: &mut Ray) -> bool {
         match self {
-            Material::Lambertian(mat) => mat.scatter(ray_in, rec, attentuation, scattered),
-            Material::Metal(mat) => mat.scatter(ray_in, rec, attentuation, scattered),
-            Material::Dielectric(mat) => mat.scatter(ray_in, rec, attentuation, scattered)
+            Material::Lambertian(mat) => mat.scatter(ray_in, rec, attenuation, scattered),
+            Material::Metal(mat) => mat.scatter(ray_in, rec, attenuation, scattered),
+            Material::Dielectric(mat) => mat.scatter(ray_in, rec, attenuation, scattered)
         }
     }
     

@@ -25,7 +25,8 @@ fn main() -> std::io::Result<()>{
 
     let material_ground = Material::Lambertian(Lambertian { albedo: ground });
     let material_center = Material::Lambertian(Lambertian { albedo: center });
-    let material_left = Material::Dielectric(Dielectric { refraction_index: 1.0/1.33});
+    let material_left = Material::Dielectric(Dielectric { refraction_index: 1.5});
+    let material_bubble = Material::Dielectric(Dielectric {refraction_index: 1.0/1.5});
     let material_right = Material::Metal(Metal { albedo: right, fuzz: 1.0});
 
     // world
@@ -44,13 +45,16 @@ fn main() -> std::io::Result<()>{
     let s4 = Box::new(Sphere::new(Point3D::new(1.0, 0.0, -1.0), 0.5, material_right));
     world.push(s4);
 
+    let s5 = Box::new(Sphere::new(Point3D::new(-1.0, 0.0, -1.0), 0.4, material_bubble));
+    world.push(s5);
+
     // rendering
 
     let mut camera = Camera::default();
 
     camera.aspect_ratio = 16.0 / 9.0;
     camera.image_width = 400;
-    camera.samples_per_pixel = 15;
+    camera.samples_per_pixel = 30;
     camera.max_depth = 5;
 
     let mut file = File::create("output/file.ppm")?;
