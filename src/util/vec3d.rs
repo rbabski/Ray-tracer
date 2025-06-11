@@ -1,5 +1,5 @@
 
-use std::{fmt, ops::{Add, AddAssign, Div, Mul, Neg, Sub}};
+use std::{f64::consts::PI, fmt, ops::{Add, AddAssign, Div, Mul, Neg, Sub}};
 
 use rand::{Rng};
 use rand_distr::{Distribution, StandardNormal};
@@ -85,6 +85,19 @@ impl Vec3D {
 
         r_perpendicular + r_parallel
     }
+
+    pub fn random_in_unit_disk() -> Vec3D {
+        let mut rng = rand::rng();
+        
+        let r = rng.r#random_range(0.0..1.0);
+        let theta = rng.random_range(0.0..2.0 * PI); 
+    
+        let x = r * theta.cos();
+        let y = r * theta.sin();
+    
+        Vec3D::new(x, y, 0.0)
+    }
+
 }
 
 impl fmt::Display for Vec3D {

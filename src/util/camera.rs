@@ -15,6 +15,8 @@ pub struct Camera {
     pub lookfrom: Point3D,
     pub lookat: Point3D,
     pub vup: Vec3D,
+    pub defocus_angle: f64,
+    pub focus_dist: f64,
 
     image_height: i32,
     camera_center: Point3D,
@@ -24,7 +26,9 @@ pub struct Camera {
     pixel_samples_scale: f64,
     u: Vec3D,
     v: Vec3D, 
-    w: Vec3D
+    w: Vec3D,
+    defocus_disk_u: Vec3D,
+    defocus_disk_v: Vec3D
 }
 
 impl Camera {
@@ -73,10 +77,9 @@ impl Camera {
 
         // camera
 
-        let focal_length = (self.lookfrom - self.lookat).length();
         let theta = self.vfov.to_radians();
         let h = (theta / 2.0).tan();
-        let viewport_height = 2.0 * h * focal_length;
+        let viewport_height = 2.0 * h * self.focus_dist;
         let viewport_width = viewport_height * (self.image_width as f64 / image_height as f64);
 
         self.w = (self.lookfrom - self.lookat).to_unit();
@@ -94,9 +97,16 @@ impl Camera {
 
         // upper left pixel location
 
-        let viewport_upper_left = self.camera_center - focal_length*self.w - viewport_u/2.0 - viewport_v/2.0;
+        let viewport_upper_left = self.camera_center - self.focus_dist*self.w - viewport_u/2.0 - viewport_v/2.0;
         self.pixel00_loc = viewport_upper_left + 0.5 * (self.pixel_delta_u + self.pixel_delta_v);
     
+        // defocus parameters
+
+        let defocus_radius = self.focus_dist * ((self.defocus_angle/2.0).to_radians()).tan();
+        self.defocus_disk_u = self.u * defocus_radius;
+        self.defocus_disk_v = self.v * defocus_radius;
+
+
     }
 
 
@@ -130,7 +140,7 @@ impl Camera {
         let offset = Self::sample_square(rng);
         let pixel_sample = self.pixel00_loc + ((i as f64 + offset.x) * self.pixel_delta_u) + ((j as f64 + offset.y) * self.pixel_delta_v);
 
-        let ray_origin = self.camera_center;
+        let ray_origin = if self.defocus_angle <= 0.0 {self.camera_center} else {self.defocus_disk_sample()};
         let ray_direction = pixel_sample - ray_origin;
 
         Ray::new(ray_origin, ray_direction)
@@ -142,6 +152,12 @@ impl Camera {
         let y = rng.random_range(-0.5..0.5);
 
         Vec3D::new(x, y, 0.0)
+    }
+
+    fn defocus_disk_sample(&self) -> Point3D {
+        let p = Vec3D::random_in_unit_disk();
+
+        self.camera_center + (p.x * self.defocus_disk_u) + (p.y * self.defocus_disk_v)
     }
 
 }

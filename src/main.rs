@@ -16,14 +16,14 @@ fn main() -> std::io::Result<()>{
 
     //colors
 
-    let ground = Color::new(0.8, 0.8, 0.0);
+    //let ground = Color::new(0.8, 0.8, 0.0);
     let center = Color::new(0.1, 0.2, 0.5);
     //let left = Color::new(0.0, 0.0, 1.0);
     let right = Color::new(0.8, 0.6, 0.2);
 
     // materials
 
-    let material_ground = Material::Lambertian(Lambertian { albedo: ground });
+    //let material_ground = Material::Lambertian(Lambertian { albedo: ground });
     let material_center = Material::Lambertian(Lambertian { albedo: center });
     let material_left = Material::Dielectric(Dielectric { refraction_index: 1.5});
     let material_bubble = Material::Dielectric(Dielectric {refraction_index: 1.0/1.5});
@@ -62,6 +62,9 @@ fn main() -> std::io::Result<()>{
     camera.lookfrom = Point3D::new(-2.0, 2.0, 1.0); 
     camera.lookat = Point3D::new(0.0, 0.0, -1.0);
     camera.vup = Vec3D::new(0.0, 1.0, 0.0);
+
+    camera.defocus_angle = 10.0;
+    camera.focus_dist = 3.4;
 
     let mut file = File::create("output/file.ppm")?;
 
