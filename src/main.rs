@@ -1,4 +1,5 @@
-use std::fs::File;
+use std::fs::{create_dir_all, File};
+use std::path::Path;
 
 mod util; 
 
@@ -58,13 +59,19 @@ fn main() -> std::io::Result<()>{
     camera.samples_per_pixel = 20;
     camera.max_depth = 5;
 
-    camera.vfov = 20.0;
+    camera.vfov = 30.0;
     camera.lookfrom = Point3D::new(-2.0, 2.0, 1.0); 
     camera.lookat = Point3D::new(0.0, 0.0, -1.0);
     camera.vup = Vec3D::new(0.0, 1.0, 0.0);
 
     camera.defocus_angle = 10.0;
     camera.focus_dist = 3.4;
+
+
+    let output_dir = Path::new("output");
+    if !output_dir.exists() {
+        create_dir_all(output_dir)?; 
+    }
 
     let mut file = File::create("output/file.ppm")?;
 
