@@ -178,10 +178,10 @@ pub fn dot(u: Vec3D, v: Vec3D) -> f64{
     u.x * v.x + u.y * v.y + u.z * v.z
 }
 
-/*pub fn cross(u: Vec3D, v: Vec3D) -> Vec3D{
+pub fn cross(u: Vec3D, v: Vec3D) -> Vec3D{
     Vec3D {
         x: u.y*v.z - u.z*v.y,
         y: u.z*v.x - u.x*v.z,
         z: u.x*v.y - u.y*v.x
     }
-}*/
+}

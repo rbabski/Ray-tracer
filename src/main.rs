@@ -9,7 +9,7 @@ use crate::util::hittable_list::HittableList;
 
 use crate::util::material::{Dielectric, Lambertian, Material, Metal};
 use crate::util::objects::sphere::Sphere;
-use crate::util::vec3d::Point3D;
+use crate::util::vec3d::{Point3D, Vec3D};
 
 
 fn main() -> std::io::Result<()>{
@@ -18,7 +18,7 @@ fn main() -> std::io::Result<()>{
 
     let ground = Color::new(0.8, 0.8, 0.0);
     let center = Color::new(0.1, 0.2, 0.5);
-    // let left = Color::new(0.8, 0.8, 0.8);
+    //let left = Color::new(0.0, 0.0, 1.0);
     let right = Color::new(0.8, 0.6, 0.2);
 
     // materials
@@ -33,19 +33,19 @@ fn main() -> std::io::Result<()>{
 
     let mut world = HittableList::default();
 
-    let s1 = Box::new(Sphere::new(Point3D::new(0.0, -100.5, -1.0), 100.0, material_ground));
-    world.push(s1);
+    //let s1 = Box::new(Sphere::new(Point3D::new(0.0, -100.5, -1.0), 100.0, material_ground));
+    //world.push(s1);
 
     let s2 = Box::new(Sphere::new(Point3D::new(0.0, 0.0, -1.2), 0.5, material_center));
     world.push(s2);
 
-    let s3: Box<Sphere> = Box::new(Sphere::new(Point3D::new(-1.0, 0.0, -1.0), 0.5, material_left));
+    let s3 = Box::new(Sphere::new(Point3D::new(-1.0, 0.0, -1.0), 0.5, material_left));
     world.push(s3);
 
-    let s4 = Box::new(Sphere::new(Point3D::new(1.0, 0.0, -1.0), 0.5, material_right));
+    let s4 = Box::new(Sphere::new(Point3D::new(-1.0, 0.0, -1.0), 0.4, material_bubble));
     world.push(s4);
 
-    let s5 = Box::new(Sphere::new(Point3D::new(-1.0, 0.0, -1.0), 0.4, material_bubble));
+    let s5 = Box::new(Sphere::new(Point3D::new(1.0, 0.0, -1.0), 0.5, material_right));
     world.push(s5);
 
     // rendering
@@ -54,8 +54,14 @@ fn main() -> std::io::Result<()>{
 
     camera.aspect_ratio = 16.0 / 9.0;
     camera.image_width = 400;
-    camera.samples_per_pixel = 30;
+
+    camera.samples_per_pixel = 20;
     camera.max_depth = 5;
+
+    camera.vfov = 20.0;
+    camera.lookfrom = Point3D::new(-2.0, 2.0, 1.0); 
+    camera.lookat = Point3D::new(0.0, 0.0, -1.0);
+    camera.vup = Vec3D::new(0.0, 1.0, 0.0);
 
     let mut file = File::create("output/file.ppm")?;
 
