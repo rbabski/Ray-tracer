@@ -4,7 +4,7 @@
 
 Repozytorium zawiera projekt semestralny zrealizowany w ramach kursu **Programowanie w języku Rust** na kierunku **Informatyka** na **Akademii Górniczo-Hutniczej w Krakowie**.
 
-Projekt przedstawia prosty silnik ray tracingu napisany w języku Rust. Implementacja została oparta na książce _"Ray Tracing in One Weekend"_ autorstwa Petera Shirley'a. Główne elementy projektu to:
+Projekt zawiera prosty silnik ray tracingu napisany w języku Rust. Implementacja została oparta na książce _"Ray Tracing in One Weekend"_ autorstwa Petera Shirley'a. Główne elementy projektu to:
 - Obsługa podstawowych materiałów (Lambertian, Metal, Dielectric)
 - Antyaliasing przez wielokrotne próbkowanie
 - Rekurencyjne śledzenie promieni odbijających się
@@ -36,5 +36,15 @@ cargo run --release
 - Peter Shirley – [_Ray Tracing in One Weekend_](https://raytracing.github.io/)
 - [Rust Programming Course – rust-course.vercel.app](https://rust-course.vercel.app/)
 - [The Rust Programming Language Book](https://doc.rust-lang.org/book/)
+
+## Przykładowe wygenerowane obrazy / Sample generated pictures
+
+Just some 3 random spheres:
+![file](https://github.com/user-attachments/assets/aeadfa98-0362-46b1-803d-8bd4e59f0fe3)
+
+Image from the final chapter:
+
+![file(1)](https://github.com/user-attachments/assets/5a672f04-3708-488b-82ed-f5cfca15a7f0)
+
 
 
