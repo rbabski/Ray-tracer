@@ -1,5 +1,6 @@
 
 use std::ops::Mul;
+
 use crate::util::vec3d::Vec3D;
 
 pub type Color = Vec3D;

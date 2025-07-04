@@ -1,4 +1,4 @@
-use crate::util::{objects::hittable::{HitRecord, Hittable}, ray::Ray};
+use crate::util::{material::Material, objects::{hittable::{HitRecord, Hittable}, sphere::Sphere}, ray::Ray, vec3d::Point3D};
 
 
 #[derive(Default)]
@@ -9,6 +9,11 @@ pub struct HittableList {
 impl HittableList {
     pub fn push(&mut self, hittable: Box<dyn Hittable + 'static>) {
         self.objects.push(hittable);
+    }
+
+    pub fn add_sphere(&mut self, center: Point3D, radius: f64, material: Material) -> &mut Self {
+        self.push(Box::new(Sphere::new(center, radius, material)));
+        self
     }
 }
 

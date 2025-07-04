@@ -1,4 +1,4 @@
-use crate::util::{material::Material, objects::hittable::{HitRecord, Hittable}, ray::Ray, vec3d::{dot, Point3D}};
+use crate::util::{material::{Material}, objects::hittable::{HitRecord, Hittable}, ray::Ray, vec3d::{dot, Point3D}};
 
 
 pub struct Sphere {
@@ -51,5 +51,8 @@ impl Hittable for Sphere {
 
         return true;
     }
+
+
+
 
 }

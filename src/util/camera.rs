@@ -42,15 +42,6 @@ impl Camera {
             let line = self.image_height - j;
             println!("\rScanlines remaining: {line}");
             for i in 0..self.image_width {
-                /*let pixel_center = self.pixel00_loc + (i as f64 * self.pixel_delta_u) + (j as f64 * self.pixel_delta_v);
-                let ray_direction = pixel_center - self.camera_center;
-
-                let ray = Ray::new(self.camera_center, ray_direction);
-                
-                let pixel_color = Camera::ray_color(ray, &world);
-
-                write_color(file, &pixel_color)?;*/
-
                 let mut pixel_color = Color::new(0.0, 0.0, 0.0);
                 
                 for _ in 0..self.samples_per_pixel {
