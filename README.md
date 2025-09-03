@@ -5,14 +5,12 @@
 Repozytorium zawiera projekt semestralny zrealizowany w ramach kursu **Programowanie w języku Rust** na kierunku **Informatyka** na **Akademii Górniczo-Hutniczej w Krakowie**.
 
 Projekt zawiera prosty silnik ray tracingu napisany w języku Rust. Implementacja została oparta na książce _"Ray Tracing in One Weekend"_ autorstwa Petera Shirley'a.
----
 
 ## Description (EN)
 
 This repository contains a semestral project developed for the **Rust Programming** course as part of the **Computer Science** program at the **AGH University of Science and Technology in Kraków**.
 
 The project is a basic ray tracing engine written in Rust. The implementation is based on the book _"Ray Tracing in One Weekend"_ by Peter Shirley.
----
 
 ## Compilation
 
